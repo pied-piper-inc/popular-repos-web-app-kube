@@ -20,10 +20,8 @@ jobs:
         environment: ${{ github.event.inputs.environment }}
     - uses: ./.github/actions/auto-deploy-app
       id: deploy-app
-      env:
-        IMAGE_TAG: ${{ steps.last-successful-deployment.outputs.deployment-sha }}
       with:
         app-domain: ${{ github.event.repository.name }}-${{ github.event.inputs.environment }}.${{ env.BASE_DOMAIN }}
-        image-tag: ${{ env.IMAGE_TAG }}
+        image-tag: ${{ steps.last-successful-deployment.outputs.deployment-sha }}
         kube-config: ${{ secrets.KUBE_CONFIG }}
         kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-${{ github.event.inputs.environment }}

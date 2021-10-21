@@ -3,29 +3,24 @@ on:
   workflow_dispatch:
     inputs:
       environment:
-        description: 'Environment you want to rollback'
+        description: 'Environment you want to collect logs for'
         required: true
         default: 'production'
 
 jobs:
-  rollback:
+  get-logs:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/get-last-successful-deployment
-      id: last-successful-deployment
+    - uses: azure/setup-kubectl@v1
+    - uses: azure/k8s-set-context@v1
       with:
-        environment: ${{ github.event.inputs.environment }}
-    - uses: ./.github/actions/auto-deploy-app
-      id: deploy-app
-      env:
-        IMAGE_TAG: ${{ steps.last-successful-deployment.outputs.deployment-sha }}
-      with:
-        app-domain: ${{ github.event.repository.name }}-${{ inputs.environment }}.${{ env.BASE_DOMAIN }}
-        image-tag: ${{ env.IMAGE_TAG }}
-        kube-config: ${{ secrets.KUBE_CONFIG }}
-        kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-${{ inputs.environment }}
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }} # Use secret (https://developer.github.com/actions/managing-workflows/storing-secrets/)
+    - run: |
+        if [[ -n "$GITHUB_HEAD_REF" ]]; then
+          stable_release_name=${{ github.event.repository.name }}-pr-${{github.event.number}}
+        else
+          stable_release_name=${{github.repository_owner }}-${{ github.event.repository.name }}-${{ github.event.inputs.environment }}
+        fi
 
-
-
-        kubectl logs --selector app=pied-piper-inc-popular-repos-web-app-kube-production --namespace pied-piper-inc-popular-repos-web-app-kube-production
+        kubectl logs --selector app=$stable_release_name --namespace stable_release_name
