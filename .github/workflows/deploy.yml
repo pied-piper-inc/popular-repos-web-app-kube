@@ -57,5 +57,5 @@ jobs:
         "$STABLE_RELEASE_NAME" \
         ${{ env.CHART }}
         
-        echo "App should be running at http://$REVIEW_APP_URL"
-        echo "::set-output name=url::http://$REVIEW_APP_URL"
+        echo "App should be running at $REVIEW_APP_URL"
+        echo "::set-output name=url::$REVIEW_APP_URL"
