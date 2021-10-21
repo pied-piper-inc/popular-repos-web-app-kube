@@ -9,12 +9,21 @@ on:
 jobs:
   rollback:
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.deploy-app.outputs.app-url }}
     steps:
     - uses: actions/checkout@v2
     - uses: ./.github/actions/get-last-successful-deployment
       id: last-successful-deployment
       with:
         environment: ${{ github.event.inputs.environment }}
-    - run: |
-        echo ${{ steps.last-successful-deployment.outputs.deployment-sha}}
-        echo ${{ toJSON(steps.last-successful-deployment.outputs.deployment) }}
+    - uses: ./.github/actions/auto-deploy-app
+      id: deploy-app
+      env:
+        IMAGE_TAG: ${{ steps.last-successful-deployment.outputs.deployment-sha }}
+      with:
+        app-domain: ${{ github.event.repository.name }}-${{ inputs.environment }}.${{ env.BASE_DOMAIN }}
+        image-tag: ${{ env.IMAGE_TAG }}
+        kube-config: ${{ secrets.KUBE_CONFIG }}
+        kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-${{ inputs.environment }}
