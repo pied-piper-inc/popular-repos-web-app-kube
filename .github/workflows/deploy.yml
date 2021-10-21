@@ -39,7 +39,7 @@ jobs:
     - run: helm repo add nano-byte https://helm.nano-byte.net/
     - id: deploy
       run: |
-        set +x
+        set -x
         export REVIEW_APP_URL=pr-${{github.event.number}}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
         export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
         export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
@@ -53,8 +53,8 @@ jobs:
         --set ingress.domains="{$REVIEW_APP_URL}" \
         --set ingress.enabled=true \
         --set ingress.class="nginx" \
-        --namespace="$KUBE_NAMESPACE" \ 
-        "$STABLE_RELEASE_NAME" \ 
+        --namespace="$KUBE_NAMESPACE" \
+        "$STABLE_RELEASE_NAME" \
         ${{ env.CHART }}
         
         echo "App should be running at http://$REVIEW_APP_URL"
