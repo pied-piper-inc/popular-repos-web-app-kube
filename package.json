@@ -11,26 +11,30 @@
     "build": "webpack --mode production",
     "start": "webpack-dev-server --open --mode development"
   },
+  "engines": {
+    "node": "^16.0.0",
+    "npm": "^7.0.0"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@babel/core": "^7.15.8",
-    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-env": "^7.15.8",
     "@babel/preset-react": "^7.14.5",
-    "babel-loader": "^8.2.2",
+    "babel-loader": "^8.2.3",
     "css-loader": "^5.2.7",
     "html-loader": "^1.3.2",
     "html-webpack-plugin": "^4.5.2",
-    "style-loader": "^1.3.0",
-    "webpack": "^4.46.0",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.59.1",
     "webpack-cli": "^4.9.1",
-    "webpack-dev-server": "^3.11.2"
+    "webpack-dev-server": "^4.3.1"
   },
   "dependencies": {
     "axios": "^0.23.0",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-router-dom": "^5.3.0"
   }
 }
