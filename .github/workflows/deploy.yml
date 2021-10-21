@@ -22,7 +22,7 @@ jobs:
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/codeql-analysis.yml@main
   deploy-review:
     needs: [build]
-    if: github.event_name == 'pull_request'
+    if: github.event_name == 'pull_request' && !contains(github.actor, 'dependabot')
     environment:
       name: review-lab
       url: ${{ steps.deploy-app.outputs.app-url }}
