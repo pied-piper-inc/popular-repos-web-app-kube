@@ -13,7 +13,7 @@ jobs:
   rollback:
     runs-on: ubuntu-latest
     environment:
-      name: ${{ github.events.inputs.environment }}
+      name: ${{ github.event.inputs.environment }}
       url: ${{ steps.deploy-app.outputs.app-url }}
     steps:
     - uses: actions/checkout@v2
