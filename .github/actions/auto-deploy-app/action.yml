@@ -58,7 +58,7 @@ runs:
           stable_release_name=${{ github.event.repository.name }}-pr-${{github.event.number}}
         else
           short_ref=${GITHUB_REF#refs/*/}
-          stable_release_name=${{ github.event.repository.name }}-$short_ref
+          stable_release_name=${{ inputs.kube-namespace }}
         fi
         
         kubectl get namespace "$KUBE_NAMESPACE" || kubectl create namespace "$KUBE_NAMESPACE"
@@ -67,7 +67,7 @@ runs:
         --set image.registry="${{ inputs.image-registry }}" \
         --set image.repository="${{ inputs.image-name }}" \
         --set image.tag="${{ inputs.image-tag}}" \
-        --set ingress.domains="{${{inputs.app-domain}}}" \
+        --set ingress.domains="{${{ inputs.app-domain }}}" \
         --set ingress.enabled=true \
         --set ingress.class="nginx" \
         --namespace="$KUBE_NAMESPACE" \
