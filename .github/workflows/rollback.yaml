@@ -1,3 +1,4 @@
+name: Rollback Environment
 on:
   workflow_dispatch:
     inputs:
