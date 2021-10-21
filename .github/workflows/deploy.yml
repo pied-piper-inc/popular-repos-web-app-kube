@@ -32,7 +32,40 @@ jobs:
     - uses: ./.github/actions/auto-deploy-app
       id: deploy-app
       with:
-        app-domain: pr-${{ github.event.number }}-${{ env.BASE_DOMAIN }}
+        app-domain: pr-${{ github.event.number }}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
         image-tag: ${{ env.IMAGE_TAG }}
         kube-config: ${{ secrets.KUBE_CONFIG }}
         kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-pr-${{ github.event.number }}
+
+  deploy-staging:
+    needs: [build, code-analysis]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: 
+      name: staging
+      url: ${{ steps.deploy-app.outputs.app-url }}
+    concurrency: staging
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./.github/actions/auto-deploy-app
+      id: deploy-app
+      with:
+        app-domain: ${{ github.event.repository.name }}-staging.{{ env.BASE_DOMAIN }}
+        image-tag: ${{ env.IMAGE_TAG }}
+        kube-config: ${{ secrets.KUBE_CONFIG }}
+        kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-staging
+
+  deploy-production:
+    needs: [deploy-staging]
+    environment:
+      name: production
+      url: ${{ steps.deploy-app.outputs.app-url }}
+    concurrency: production
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ./.github/actions/auto-deploy-app
+      id: deploy-app
+      with:
+        app-domain: ${{ github.event.repository.name }}-production.{{ env.BASE_DOMAIN }}
+        image-tag: ${{ env.IMAGE_TAG }}
+        kube-config: ${{ secrets.KUBE_CONFIG }}
+        kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-production
