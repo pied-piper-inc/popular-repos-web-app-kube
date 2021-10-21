@@ -19,7 +19,8 @@ jobs:
   build:
     name: Build
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/build-image.yml@main
-
+  code-analysis:
+    uses: pied-piper-inc/pipular-repos-web-app-kube/.github/workflows/codeql-analysis@main
   deploy-review:
     needs: build
     if: github.event_name == 'pull_request'
@@ -28,34 +29,10 @@ jobs:
       url: ${{ steps.deploy-app.outputs.url }}
     runs-on: ubuntu-latest
     steps:
-    - uses: azure/setup-helm@v1
-    - uses: azure/setup-kubectl@v1
-    - uses: azure/k8s-set-context@v1
+    - uses: actions/checkout@v2
+    - uses: ./.github/actions/auto-deploy-app
       with:
-        method: kubeconfig
-        kubeconfig: ${{ secrets.KUBE_CONFIG }} # Use secret (https://developer.github.com/actions/managing-workflows/storing-secrets/)
-        context: pied-piper-inc  #If left unspecified, current-context from kubeconfig is used as default
-    
-    - run: helm repo add nano-byte https://helm.nano-byte.net/
-    - id: deploy-app
-      run: |
-        export REVIEW_APP_DOMAIN=pr-${{github.event.number}}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
-        export REVIEW_APP_URL="http://$REVIEW_APP_DOMAIN"
-        export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
-        export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
-        
-        kubectl get namespace "$KUBE_NAMESPACE" || kubectl create namespace "$KUBE_NAMESPACE"
-        
-        helm upgrade --install --debug --wait \
-        --set image.registry="${{ env.IMAGE_REGISTRY }}" \
-        --set image.repository="${{ env.IMAGE_NAME }}" \
-        --set image.tag="${{ env.IMAGE_TAG }}" \
-        --set ingress.domains="{$REVIEW_APP_DOMAIN}" \
-        --set ingress.enabled=true \
-        --set ingress.class="nginx" \
-        --namespace="$KUBE_NAMESPACE" \
-        "$STABLE_RELEASE_NAME" \
-        ${{ env.CHART }}
-        
-        echo "App should be running at $REVIEW_APP_URL"
-        echo "::set-output name=url::$REVIEW_APP_URL"
+        app-domain: pr-${{ github.event.number }}-${{ env.BASE_DOMAIN }}
+        image-tag: ${{ env.IMAGE_TAG }}
+        kube-config: ${{ secrets.KUBE_CONFIG }}
+        kube-namespace: ${{github.repository_owner }}-${{ github.event.repository.name }}-pr-${{ github.event.number }}
