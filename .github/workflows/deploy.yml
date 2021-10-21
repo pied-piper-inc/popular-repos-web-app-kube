@@ -20,7 +20,7 @@ jobs:
     name: Build
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/build-image.yml@main
   code-analysis:
-    uses: pied-piper-inc/pipular-repos-web-app-kube/.github/workflows/codeql-analysis@main
+    uses: pied-piper-inc/pipular-repos-web-app-kube/.github/workflows/codeql-analysis.yml@main
   deploy-review:
     needs: build
     if: github.event_name == 'pull_request'
