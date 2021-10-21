@@ -33,7 +33,7 @@ inputs:
 outputs:
   app-url:
     description: "Url of the deployed app"
-    value: ${{steps.get-last-successful-deployment.outputs.deployment-sha}}
+    value: ${{ steps.deploy-app.outputs.app-url }}
 runs:
   using: "composite"
   steps:
