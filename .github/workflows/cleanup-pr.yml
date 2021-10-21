@@ -8,15 +8,18 @@ permissions:
   contents: read
   
 jobs:
-  delete-review-slot:
+  delete-review-app:
     runs-on: ubuntu-latest
     steps:
-    - name: Azure login
-      uses: azure/login@v1
+    - uses: azure/setup-helm@v1
+    - uses: azure/setup-kubectl@v1
+    - uses: azure/k8s-set-context@v1
       with:
-        creds: ${{ secrets.AZURE_SUBSCRIPTION_SECRET }}
-  
-    - name: Create deployment slot
-      continue-on-error: true
-      run: |
-        az webapp deployment slot delete  --name popular-repos --slot review-pr-${{ github.event.number }}  --resource-group pied-piper-inc
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }} # Use secret (https://developer.github.com/actions/managing-workflows/storing-secrets/)
+    - run: |
+        stable_release_name=${{ github.event.repository.name }}-pr-${{github.event.number}}
+        kube_namespace=${{github.repository_owner }}-${{ github.event.repository.name }}-pr-${{ github.event.number }}
+
+        helm uninstall "$stable_release_name" --namespace="$kube_namespace" --wait
+
