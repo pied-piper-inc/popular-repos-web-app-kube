@@ -21,7 +21,7 @@ jobs:
   code-analysis:
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/codeql-analysis.yml@main
   deploy-review:
-    needs: [build, code-analysis]
+    needs: [build]
     if: github.event_name == 'pull_request'
     environment:
       name: review-lab
