@@ -39,6 +39,7 @@ jobs:
     - run: helm repo add nano-byte https://helm.nano-byte.net/
     - id: deploy
       run: |
+        set +x
         export REVIEW_APP_URL=pr-${{github.event.number}}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
         export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
         export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
