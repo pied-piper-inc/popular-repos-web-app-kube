@@ -38,6 +38,6 @@ runs:
           if(recent_successful_deployment != null)
             break
         }
-        core.debug(last_successful_deployment)
-        core.setOutput('deployment', JSON.stringify(last_successful_deployment))
-        core.setOutput('deployment-sha', last_successful_deployment.sha)
+        core.debug(recent_successful_deployment)
+        core.setOutput('deployment', JSON.stringify(recent_successful_deployment))
+        core.setOutput('deployment-sha', recent_successful_deployment.sha)
