@@ -2,7 +2,11 @@ name: Build Container Image
 on:
   workflow_dispatch:
   workflow_call:
-      
+
+permissions:
+  contents: read
+  packages: write
+  
 jobs:
   build:
     name: Build
