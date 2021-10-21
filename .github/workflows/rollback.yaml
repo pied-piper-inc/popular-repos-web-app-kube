@@ -6,6 +6,8 @@ on:
         description: 'Environment you want to rollback'
         required: true
         default: 'production'
+env:
+  BASE_DOMAIN: piedpiper.patterson.io
 
 jobs:
   rollback:
