@@ -46,7 +46,9 @@ runs:
         context: ${{ inputs.kube-context }}  #If left unspecified, current-context from kubeconfig is used as default
     
     - run: helm repo add nano-byte https://helm.nano-byte.net/
+      shell: bash
     - id: deploy-app
+      shell: bash
       run: |
         export APP_URL="http://${{ inputs.app-domain }}"
         export KUBE_NAMESPACE=${{ inputs.kube-namespace }}
