@@ -17,20 +17,20 @@ env:
 
 jobs:
   build:
-    name: Build
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/build-image.yml@main
   code-analysis:
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/codeql-analysis.yml@main
   deploy-review:
-    needs: build
+    needs: [build, code-analysis]
     if: github.event_name == 'pull_request'
     environment:
       name: review-lab
-      url: ${{ steps.deploy-app.outputs.url }}
+      url: ${{ steps.deploy-app.outputs.app-url }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - uses: ./.github/actions/auto-deploy-app
+      id: deploy-app
       with:
         app-domain: pr-${{ github.event.number }}-${{ env.BASE_DOMAIN }}
         image-tag: ${{ env.IMAGE_TAG }}
