@@ -4,7 +4,7 @@ inputs:
   app-domain:
     required: true
     description: "Domain for app deployment, should be full url"
-  image-regsitry:
+  image-registry:
     required: false
     default: ghcr.io
   image-name:
