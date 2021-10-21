@@ -23,4 +23,4 @@ jobs:
           stable_release_name=${{github.repository_owner }}-${{ github.event.repository.name }}-${{ github.event.inputs.environment }}
         fi
 
-        kubectl logs --selector app=$stable_release_name --namespace stable_release_name
+        kubectl logs --selector app=$stable_release_name --namespace $stable_release_name
