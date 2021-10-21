@@ -6,7 +6,13 @@ on:
         description: 'Environment you want to rollback'
         required: true
         default: 'production'
-
+env:
+  BASE_DOMAIN: piedpiper.patterson.io
+  CHART: nano-byte/generic-service
+  IMAGE_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_TAG: ${{ github.event.pull_request.head.sha || github.sha }}
+  
 jobs:
   rollback:
     runs-on: ubuntu-latest
