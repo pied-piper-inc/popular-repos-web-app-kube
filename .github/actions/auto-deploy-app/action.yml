@@ -4,7 +4,7 @@ inputs:
   app-domain:
     required: true
     description: "Domain for app deployment, should be full url"
-  image-regsitry:
+  image-registry:
     required: false
     default: ghcr.io
   image-name:
@@ -33,7 +33,7 @@ inputs:
 outputs:
   app-url:
     description: "Url of the deployed app"
-    value: ${{steps.get-last-successful-deployment.outputs.deployment-sha}}
+    value: ${{ steps.deploy-app.outputs.app-url }}
 runs:
   using: "composite"
   steps:
@@ -46,13 +46,15 @@ runs:
         context: ${{ inputs.kube-context }}  #If left unspecified, current-context from kubeconfig is used as default
     
     - run: helm repo add nano-byte https://helm.nano-byte.net/
+      shell: bash
     - id: deploy-app
+      shell: bash
       run: |
         export APP_URL="http://${{ inputs.app-domain }}"
         export KUBE_NAMESPACE=${{ inputs.kube-namespace }}
 
-        local stable_release_name
-        if [[ -z $GITHUB_HEAD_REF ]]; then
+        export stable_release_name
+        if [[ -n "$GITHUB_HEAD_REF" ]]; then
           stable_release_name=${{ github.event.repository.name }}-pr-${{github.event.number}}
         else
           short_ref=${GITHUB_REF#refs/*/}
@@ -73,4 +75,4 @@ runs:
         ${{ inputs.helm-chart }}
         
         echo "App should be running at $APP_URL"
-        echo "::set-output name=url::$APP_URL"
+        echo "::set-output name=app-url::$APP_URL"
