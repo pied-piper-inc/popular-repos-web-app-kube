@@ -26,6 +26,7 @@ jobs:
     environment:
       name: review-lab
       url: ${{ steps.deploy-app.outputs.app-url }}
+    concurrency: pr-${{ github.event.number }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
