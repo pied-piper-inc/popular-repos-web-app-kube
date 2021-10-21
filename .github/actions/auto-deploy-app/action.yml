@@ -57,7 +57,6 @@ runs:
         if [[ -n "$GITHUB_HEAD_REF" ]]; then
           stable_release_name=${{ github.event.repository.name }}-pr-${{github.event.number}}
         else
-          short_ref=${GITHUB_REF#refs/*/}
           stable_release_name=${{ inputs.kube-namespace }}
         fi
         
