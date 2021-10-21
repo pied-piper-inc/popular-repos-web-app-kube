@@ -67,6 +67,7 @@ runs:
         --set image.registry="${{ inputs.image-registry }}" \
         --set image.repository="${{ inputs.image-name }}" \
         --set image.tag="${{ inputs.image-tag}}" \
+        --set image.pullPolicy="Always" \
         --set ingress.domains="{${{ inputs.app-domain }}}" \
         --set ingress.enabled=true \
         --set ingress.class="nginx" \
