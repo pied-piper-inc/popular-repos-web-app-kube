@@ -21,15 +21,22 @@ runs:
                                 owner: context.repo.owner,
                                 repo: context.repo.repo
                               })
-        const deployments = result.data.filter(deployment => deployment.environment === '${{ inputs.environment }}')
-        var last_successful_deployment = null;
+        const deployments = response.data.filter(deployment => deployment.environment === 'production')
+        const most_recent_deployment = deployments[0]
+        core.debug(most_recent_deployment)
+        var recent_successful_deployment = null;
+
         for (const deployment of deployments) {
-          core.debug(deployment.url)
-          const deployment_statuses = await github.request(deployment.statuses_url)
-          if(deployment_statuses.data[0].state === 'success') {
-            last_successful_deployment = deployment
-            break
+          const response = await github.request(deployment.statuses_url)
+          const deployment_statuses = response.data
+          for(const deployment_status of deployment_statuses) {
+            if( (deployment_status.state === 'success') && (deployment.id != most_recent_deployment.id) ) {
+              recent_successful_deployment = deployment
+              break
+            }
           }
+          if(recent_successful_deployment != null)
+            break
         }
         core.debug(last_successful_deployment)
         core.setOutput('deployment', JSON.stringify(last_successful_deployment))
