@@ -25,7 +25,7 @@ jobs:
     if: github.event_name == 'pull_request'
     environment:
       name: review-lab
-      url: ${{ steps.deploy.outputs.url }}
+      url: ${{ job.steps.deploy.outputs.url }}
     runs-on: ubuntu-latest
     steps:
     - uses: azure/setup-helm@v1
@@ -39,7 +39,6 @@ jobs:
     - run: helm repo add nano-byte https://helm.nano-byte.net/
     - id: deploy
       run: |
-        set -x
         export REVIEW_APP_URL=pr-${{github.event.number}}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
         export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
         export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
