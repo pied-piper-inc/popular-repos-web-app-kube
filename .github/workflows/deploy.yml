@@ -7,9 +7,47 @@ on:
   push:
     branches:
       - main
-      
+
+env:
+  BASE_DOMAIN: piedpiper.patterson.io
+  CHART: nano-byte/generic-service
+  IMAGE_REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_TAG: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   build:
     name: Build
     uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/build-image.yml@main
 
+  deploy-review:
+    needs: build
+    if: github.event_name == 'pull_request'
+    environment:
+      name: review-lab
+      url:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: azure/setup-helm@v1
+    - uses: azure/setup-kubectl@v1
+    - uses: azure/k8s-set-context@v1
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }} # Use secret (https://developer.github.com/actions/managing-workflows/storing-secrets/)
+        context: pied-piper-inc  #If left unspecified, current-context from kubeconfig is used as default
+    
+    - run: helm repo add nano-byte https://helm.nano-byte.net/
+    - run: |
+        export REVIEW_APP_URL=pr-${{github.event.number}}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
+        export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
+        export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
+        kubectl get namespace "$KUBE_NAMESPACE" | kubectl create namespace "$KUBE_NAMESPACE"
+        
+        helm upgrade --install --wait \
+        --set image.registry="${{ env.IMAGE_REGISTRY }}"\
+        --set image.repository="${{ env.IMAGE_NAME }}" \
+        --set image.tag=${{ env.IMAGE_TAG }} \
+        --set ingress.domains="{$REVEW_APP_URL}" \
+        --set ingress.enabled=true \
+        --set ingress.class=nginx \
+        --namespace="$KUBE_NAMESPACE" "$STABLE_RELEASE_NAME" ${{ env.CHART }}
