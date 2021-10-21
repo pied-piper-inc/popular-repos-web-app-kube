@@ -43,7 +43,7 @@ jobs:
         export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
         export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
         
-        kubectl get namespace "$KUBE_NAMESPACE" | kubectl create namespace "$KUBE_NAMESPACE"
+        kubectl get namespace "$KUBE_NAMESPACE" || kubectl create namespace "$KUBE_NAMESPACE"
         
         helm upgrade --install --debug --wait \
         --set image.registry="${{ env.IMAGE_REGISTRY }}" \
