@@ -25,7 +25,7 @@ jobs:
     if: github.event_name == 'pull_request'
     environment:
       name: review-lab
-      url:
+      url: ${{ steps.deploy.outputs.url }}
     runs-on: ubuntu-latest
     steps:
     - uses: azure/setup-helm@v1
@@ -37,17 +37,24 @@ jobs:
         context: pied-piper-inc  #If left unspecified, current-context from kubeconfig is used as default
     
     - run: helm repo add nano-byte https://helm.nano-byte.net/
-    - run: |
+    - id: deploy
+      run: |
         export REVIEW_APP_URL=pr-${{github.event.number}}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
         export KUBE_NAMESPACE=pr-${{github.event.number}}-${{ github.event.repository.name }}
         export STABLE_RELEASE_NAME=pr-${{github.event.number}}-${{ github.event.repository.name }}
+        
         kubectl get namespace "$KUBE_NAMESPACE" | kubectl create namespace "$KUBE_NAMESPACE"
         
-        helm upgrade --install --wait \
-        --set image.registry="${{ env.IMAGE_REGISTRY }}"\
+        helm upgrade --install --debug --wait \
+        --set image.registry="${{ env.IMAGE_REGISTRY }}" \
         --set image.repository="${{ env.IMAGE_NAME }}" \
-        --set image.tag=${{ env.IMAGE_TAG }} \
-        --set ingress.domains="{$REVEW_APP_URL}" \
+        --set image.tag="${{ env.IMAGE_TAG }}" \
+        --set ingress.domains="{$REVIEW_APP_URL}" \
         --set ingress.enabled=true \
-        --set ingress.class=nginx \
-        --namespace="$KUBE_NAMESPACE" "$STABLE_RELEASE_NAME" ${{ env.CHART }}
+        --set ingress.class="nginx" \
+        --namespace="$KUBE_NAMESPACE" \ 
+        "$STABLE_RELEASE_NAME" \ 
+        ${{ env.CHART }}
+        
+        echo "App should be running at http://$REVIEW_APP_URL"
+        echo "::set-output name=url::http://$REVIEW_APP_URL"
