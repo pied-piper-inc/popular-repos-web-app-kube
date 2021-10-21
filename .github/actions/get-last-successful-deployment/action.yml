@@ -21,7 +21,7 @@ runs:
                                 owner: context.repo.owner,
                                 repo: context.repo.repo
                               })
-        const deployments = response.data.filter(deployment => deployment.environment === 'production')
+        const deployments = result.data.filter(deployment => deployment.environment === 'production')
         const most_recent_deployment = deployments[0]
         core.debug(most_recent_deployment)
         var recent_successful_deployment = null;
