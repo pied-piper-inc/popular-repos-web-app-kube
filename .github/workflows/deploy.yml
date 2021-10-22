@@ -17,9 +17,11 @@ env:
 
 jobs:
   build:
-    uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/build-image.yml@main
+    uses: pied-piper-inc/workflows/.github/workflows/build-image.yml@main
   code-analysis:
-    uses: pied-piper-inc/popular-repos-web-app-kube/.github/workflows/codeql-analysis.yml@main
+    uses: pied-piper-inc/workflows/.github/workflows/code-analysis.yml@main
+    with:
+      languages: 'javascript'
   deploy-review:
     needs: [build]
     if: github.event_name == 'pull_request' && !contains(github.actor, 'dependabot')
@@ -29,8 +31,7 @@ jobs:
     concurrency: pr-${{ github.event.number }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/auto-deploy-app
+    - uses: pied-piper-inc/workflows/actions/auto-deploy@main
       id: deploy-app
       with:
         app-domain: pr-${{ github.event.number }}-${{ github.event.repository.name }}.${{ env.BASE_DOMAIN }}
@@ -47,8 +48,7 @@ jobs:
       url: ${{ steps.deploy-app.outputs.app-url }}
     concurrency: staging
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/auto-deploy-app
+    - uses: pied-piper-inc/workflows/actions/auto-deploy@main
       id: deploy-app
       with:
         app-domain: ${{ github.event.repository.name }}-staging.${{ env.BASE_DOMAIN }}
@@ -64,8 +64,7 @@ jobs:
       url: ${{ steps.deploy-app.outputs.app-url }}
     concurrency: production
     steps:
-    - uses: actions/checkout@v2
-    - uses: ./.github/actions/auto-deploy-app
+    - uses: pied-piper-inc/workflows/actions/auto-deploy@main
       id: deploy-app
       with:
         app-domain: ${{ github.event.repository.name }}-production.${{ env.BASE_DOMAIN }}
