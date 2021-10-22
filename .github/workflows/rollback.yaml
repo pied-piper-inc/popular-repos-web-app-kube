@@ -21,7 +21,7 @@ jobs:
       id: last-successful-deployment
       with:
         environment: ${{ github.event.inputs.environment }}
-    - uses: ./.github/actions/auto-deploy-app
+    - uses: pied-piper-inc/workflows/actions/auto-deploy@main
       id: deploy-app
       with:
         app-domain: ${{ github.event.repository.name }}-${{ github.event.inputs.environment }}.${{ env.BASE_DOMAIN }}
