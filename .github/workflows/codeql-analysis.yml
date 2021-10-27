@@ -18,4 +18,4 @@ on:
 jobs:
   analyze:
     name: Analyze
-    uses: pied-piper-inc/workflows/.github/workflows/code-analysis.yml
+    uses: pied-piper-inc/workflows/.github/workflows/code-analysis.yml@main
