@@ -13,7 +13,7 @@ jobs:
     steps:
     - uses: azure/setup-helm@v1
     - uses: azure/setup-kubectl@v1
-    - uses: azure/k8s-set-context@v1
+    - uses: azure/k8s-set-context@v2
       with:
         method: kubeconfig
         kubeconfig: ${{ secrets.KUBE_CONFIG }} # Use secret (https://developer.github.com/actions/managing-workflows/storing-secrets/)
