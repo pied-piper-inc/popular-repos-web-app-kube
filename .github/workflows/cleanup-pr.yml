@@ -11,7 +11,7 @@ jobs:
   delete-review-app:
     runs-on: ubuntu-latest
     steps:
-    - uses: azure/setup-helm@v1
+    - uses: azure/setup-helm@v3
     - uses: azure/setup-kubectl@v1
     - uses: azure/k8s-set-context@v1
       with:
