@@ -16,7 +16,7 @@ jobs:
       name: ${{ github.event.inputs.environment }}
       url: ${{ steps.deploy-app.outputs.app-url }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3.1.0
     - uses: ./.github/actions/get-last-successful-deployment
       id: last-successful-deployment
       with:
